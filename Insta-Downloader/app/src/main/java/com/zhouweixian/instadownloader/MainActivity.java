@@ -1,21 +1,30 @@
 package com.zhouweixian.instadownloader;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -52,6 +61,7 @@ import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
 
 public class MainActivity extends RxAppCompatActivity {
 
+    private static final String TAG = "Ins->";
     private EditText input;
     private final String intaLink = "https://www.instagram.com/p/";
     private final String urlPattern = "https://www.instagram.com(?:/.*?)?/p/(.*)(?:/.*)?";
@@ -64,13 +74,16 @@ public class MainActivity extends RxAppCompatActivity {
     private ImageView mDownload;
     private CardView mCardView;
     private InstaAdapter adapter;
+    private WindowManager mWindowManager;
+    private WindowManager.LayoutParams mLayoutParams;
+    private Button mButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // marshmallow
@@ -88,7 +101,7 @@ public class MainActivity extends RxAppCompatActivity {
 //        insta.setDir("/InstaDownloader");
 
         // input url
-        input = (EditText) findViewById(R.id.input);
+        input = findViewById(R.id.input);
         input.setPrefix(intaLink);
         input.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -176,6 +189,63 @@ public class MainActivity extends RxAppCompatActivity {
     protected void onResume() {
         super.onResume();
         tryLoadImageAndVideo();
+        showFloat();
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void showFloat() {
+        mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+
+        mButton = new Button(getApplicationContext());
+        mButton.setText("Hello");
+        mButton.setBackgroundColor(Color.CYAN);
+
+        mLayoutParams = new WindowManager.LayoutParams();
+        mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        mLayoutParams.gravity = Gravity.START | Gravity.TOP;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        } else {
+            mLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+        }
+
+        mLayoutParams.format = PixelFormat.TRANSPARENT;
+        mLayoutParams.width = 500;
+        mLayoutParams.height = 200;
+
+        mWindowManager.addView(mButton, mLayoutParams);
+
+        mButton.setOnTouchListener(new View.OnTouchListener() {
+            int lastX = 0, lastY = 0;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int rawX = (int) event.getRawX();
+                int rawY = (int) event.getRawY();
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        lastX = rawX;
+                        lastY = rawY;
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        int deltaX = rawX - lastX;
+                        int deltaY = rawY - lastY;
+                        mLayoutParams.x += deltaX;
+                        mLayoutParams.y += deltaY;
+                        Log.d(TAG, "showFloat: dx: " + deltaX + "dy: " + deltaY + " - " + mLayoutParams);
+                        mWindowManager.updateViewLayout(mButton, mLayoutParams);
+                        lastX = rawX;
+                        lastY = rawY;
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        break;
+                    default:
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
     private void handleResponse(SourceModel model) {
@@ -210,7 +280,7 @@ public class MainActivity extends RxAppCompatActivity {
         // Retrieve the action-view from menu
         View v = MenuItemCompat.getActionView(actionViewItem);
         // Find the button within action-view
-        Button x = (Button) v.findViewById(R.id.btn_instagram);
+        Button x = v.findViewById(R.id.btn_instagram);
         // Handle button click here
         x.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -229,13 +299,13 @@ public class MainActivity extends RxAppCompatActivity {
     }
 
     private void initView() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mInput = (EditText) findViewById(R.id.input);
-        mInstadown = (RecyclerView) findViewById(R.id.instadown);
-        mImage = (ImageView) findViewById(R.id.image);
-        mRepost = (ImageView) findViewById(R.id.repost);
-        mDownload = (ImageView) findViewById(R.id.download);
-        mCardView = (CardView) findViewById(R.id.card_view);
+        mToolbar = findViewById(R.id.toolbar);
+        mInput = findViewById(R.id.input);
+        mInstadown = findViewById(R.id.instadown);
+        mImage = findViewById(R.id.image);
+        mRepost = findViewById(R.id.repost);
+        mDownload = findViewById(R.id.download);
+        mCardView = findViewById(R.id.card_view);
         LinearLayoutManager inLayout = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         mInstadown.setLayoutManager(inLayout);
         mInstadown.setItemAnimator(new DefaultItemAnimator());
