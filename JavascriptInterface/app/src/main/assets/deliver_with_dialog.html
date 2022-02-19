@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link type="text/css" rel="stylesheet" href="css/deliver.css" />
+
+	<link rel="stylesheet" type="text/css" href="./common.css" />
+	<link rel="stylesheet" type="text/css" href="./dialog2.css" />
+</head>
+
+<style>
+
+</style>
+<script type="text/javascript" defer="defer">
+	window.onload = function () {
+
+		// android.setWH();
+
+		setUpNavBar()
+		setUpButton()
+		btnTimer(3)
+	}
+
+	function setUpButton() {
+		var btn = document.getElementById("button");
+		btn.onclick = showProgress
+	}
+
+	function setUpNavBar() {
+		var take = document.getElementById("nav_take");
+		var put = document.getElementById("nav_put");
+		console.log(take);
+		take.onclick = () => {
+			take.className = "nav_take selected"
+			put.className = "nav_put unselected"
+		}
+		put.onclick = function () {
+			put.className = "nav_put selected"
+			take.className = "nav_take unselected"
+		}
+	}
+
+	function btnTimer(cnt) {
+		var btn = document.getElementById("button");
+		var content = btn.innerText
+		var timer = setInterval(function () {
+			if (cnt == 0) {
+				btn.innerText = content;
+				clearInterval(timer)
+			} else {
+				btn.innerText = `${content}(${cnt}s)`;
+				cnt--;
+			}
+		}, 1000)
+	}
+
+	function showProgress() {
+		var circle = document.getElementById("circle");
+		circle.className = ""
+		setTimeout(()=>{
+			window.location.href="dialog2.html"
+		}, 3000);
+	}
+
+	function hideProgress() {
+		var circle = document.getElementById("circle");
+		circle.className = "hide"
+	}
+
+	function setWH(w, h) {
+		console.log(w)
+		console.log(h)
+		console.log(`width: ${w}px; height: ${h}px`)
+		var body = document.getElementsByTagName("body")[0];
+		body.style.cssText = `width: ${w}px; height: ${h}px`
+		var head = document.getElementsByTagName("head")[0];
+		head.style.cssText = `width: ${w}px; height: ${h}px`
+		var html = document.getElementsByTagName("html")[0];
+		html.style.cssText = `width: ${w}px; height: ${h}px`
+	}
+</script>
+
+<body>
+	<div class="mask flex-col">
+		<div class="block5 flex-col">
+			<div class="mod3 flex-col">
+				<span class="word14">开箱页面</span>
+				<div id="click_line1" class="outer1 flex-row">
+					<div class="wrap3 checked"></div>
+					<span class="word15">经典模式（默认）</span>
+				</div>
+				<div id="click_line2" class="outer2 flex-row">
+					<div class="wrap3"></div>
+					<span class="word16">表情模式</span>
+				</div>
+				<div class="outer3 flex-col button_dialog">
+					<span class="word17">确定</span>
+				</div>
+			</div>
+		</div>
+		<img id="ic_close" class="pic5" referrerpolicy="no-referrer" src="./static/images/ic_close.png" />
+	</div>
+	<div class="main">
+		<p class="title_txt">您的物品已送达</p>
+		<p class="subtitle_txt">站点名称</p>
+		<div class="space"></div>
+		<div class="button">
+			<p id="button" class="button_txt">一键取出</p>
+			<div id="circle" class="circle hide"></div>
+		</div>
+	</div>
+	<div class="lang">
+		<img src="static/images/ic_lang.png" alt="地球图标">
+		<p class="lang_txt">中/Eng</p>
+	</div>
+	<div class="order">
+		<img src="static/images/ic_order.png" alt="订单图标">
+		<p class="order_txt">订单列表</p>
+	</div>
+	<div class="nav">
+		<div id="nav_take" class="nav_take selected">
+			<p class="take_txt">取</p>
+		</div>
+		<div id="nav_put" class="nav_put unselected">
+			<p class="put_txt">放</p>
+		</div>
+	</div>
+
+</body>
+
+</html>

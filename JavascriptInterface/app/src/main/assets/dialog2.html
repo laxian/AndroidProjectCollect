@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Document</title>
+	<link rel="stylesheet" type="text/css" href="./common.css" />
+	<link rel="stylesheet" type="text/css" href="./dialog2.css" />
+</head>
+
+<script>
+	window.onload = function () {
+		setUpRadioBox();
+		setUpButton();
+		setUpClose();
+	}
+
+	function setUpClose() {
+		var close = document.getElementById("ic_close");
+		close.onclick = () => {
+			onClose();
+		}
+	}
+
+	function setUpButton() {
+		var btn = document.getElementsByClassName("button_dialog")[0];
+		btn.onclick = () => {
+			onConfirm();
+		}
+	}
+
+	function onConfirm() {
+		android.onConfirm();
+	}
+
+	function onClose() {
+		android.onClose();
+		console.log('android' in window)
+	}
+
+	function setUpRadioBox() {
+		var line1 = document.getElementById("click_line1");
+		var line2 = document.getElementById("click_line2");
+
+		function uncheckAll() {
+			var elements = document.getElementsByClassName("wrap3");
+			Array.prototype.forEach.call(elements, element => {
+				element.className = "wrap3"
+			});
+		}
+		line1.onclick = function () {
+			var radio = line1.getElementsByTagName("div")[0];
+			uncheckAll()
+			radio.className = "wrap3 checked"
+		}
+		line2.onclick = function () {
+			var radio = line2.getElementsByTagName("div")[0];
+			uncheckAll()
+			radio.className = "wrap3 checked"
+		}
+
+	}
+</script>
+
+<body>
+	<div class="mask flex-col">
+		<div class="block52">
+			<img id="ic_close" class="pic5" referrerpolicy="no-referrer"
+				src="./static/images/ic_close.png" />
+			<div class="block5 flex-col">
+				<div class="mod3 flex-col">
+					<span class="word14">开箱页面</span>
+					<div id="click_line1" class="outer1 flex-row">
+						<div class="wrap3 checked"></div>
+						<span class="word15">经典模式（默认）</span>
+					</div>
+					<div id="click_line2" class="outer2 flex-row">
+						<div class="wrap3"></div>
+						<span class="word16">表情模式</span>
+					</div>
+					<div class="outer3 flex-col button_dialog">
+						<span class="word17">确定</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>
